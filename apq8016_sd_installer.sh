@@ -5,8 +5,8 @@
 
 DATE=`date +%Y%m%d`
 VERSION="V"$1
-BL_LINARO_RELEASE="16.09"
-BL_BUILD_NUMBER="72"
+BL_LINARO_RELEASE="17.04"
+BL_BUILD_NUMBER="79"
 INSTALLER_LINARO_RELEASE="17.04"
 INSTALLER_BUILD_VERSION="20170510-233"
 TARGET_OS="Android"
@@ -14,6 +14,8 @@ STORED="output"
 RSB_4760="true"
 EPC_R4761="false"
 ANDROID_OUTPUT_PATH=$2
+
+ANDROID_FILE_LIST="emmc_appsboot.mbn boot.img system.img userdata.img persist.img recovery.img cache.img"
 
 echo "[ADV] DATE = ${DATE}"
 echo "[ADV] VERSION = ${VERSION}"
@@ -37,13 +39,13 @@ function get_installer_images()
 
     # Get SD and EMMC bootloader package
     wget --progress=dot -e dotbytes=2M \
-         https://github.com/ADVANTECH-Corp/db-boot-tools/raw/${BL_LINARO_RELEASE}/dragonboard410c_bootloader_sd_linux-${BL_BUILD_NUMBER}.zip
+         https://github.com/ADVANTECH-Corp/db-boot-tools/raw/${BL_LINARO_RELEASE}-adv/advantech_bootloader_sd_linux-${BL_BUILD_NUMBER}.zip
     wget --progress=dot -e dotbytes=2M \
          https://github.com/ADVANTECH-Corp/db-boot-tools/raw/${BL_LINARO_RELEASE}-adv/advantech_bootloader_emmc_linux-${BL_BUILD_NUMBER}.zip
     wget --progress=dot -e dotbytes=2M \
-         https://github.com/ADVANTECH-Corp/db-boot-tools/raw/${BL_LINARO_RELEASE}/dragonboard410c_bootloader_emmc_android-${BL_BUILD_NUMBER}.zip
+         https://github.com/ADVANTECH-Corp/db-boot-tools/raw/${BL_LINARO_RELEASE}-adv/advantech_bootloader_emmc_android-${BL_BUILD_NUMBER}.zip
 
-    unzip -d out dragonboard410c_bootloader_sd_linux-${BL_BUILD_NUMBER}.zip
+    unzip -d out advantech_bootloader_sd_linux-${BL_BUILD_NUMBER}.zip
 
     # Get installer boot & rootfs
     wget --progress=dot -e dotbytes=2M \
@@ -64,6 +66,14 @@ function prepare_target_os()
         rm -rf os
     fi
     mkdir -p os/${TARGET_OS}
+
+    for SRC_IMAGE in $ANDROID_FILE_LIST
+    do
+        if [ ! -f ${ANDROID_OUTPUT_PATH}${SRC_IMAGE} ]; then
+            echo "Can't find ${ANDROID_OUTPUT_PATH}${SRC_IMAGE}"
+            exit 1
+        fi
+    done
 
     case ${TARGET_OS} in
     "Yocto")
@@ -98,7 +108,7 @@ EOF
 
     if [ ${TARGET_OS} == "Android" ]; then
         cp dragonboard410c/android/partitions.txt os/${TARGET_OS}
-        unzip -n -d os/${TARGET_OS} dragonboard410c_bootloader_emmc_android-${BL_BUILD_NUMBER}.zip
+        unzip -n -d os/${TARGET_OS} advantech_bootloader_emmc_android-${BL_BUILD_NUMBER}.zip
     else
         cp dragonboard410c/linux/partitions.txt os/${TARGET_OS}
         unzip -d os/${TARGET_OS} advantech_bootloader_emmc_linux-${BL_BUILD_NUMBER}.zip
@@ -160,7 +170,7 @@ elif [ $TARGET_OS == "Android" ]; then
     OS_PREFIX="A"
     if [ "$1" == "" ]; then
         echo "Please input android output path!"
-        exit
+        exit 1
     fi
 fi
 
