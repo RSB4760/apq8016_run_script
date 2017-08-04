@@ -49,11 +49,12 @@ function get_installer_images()
 
     # Get installer boot & rootfs
     wget --progress=dot -e dotbytes=2M \
-         http://advgitlab.eastasia.cloudapp.azure.com/db410c/sd-installer/raw/${INSTALLER_LINARO_RELEASE}/boot-installer-linaro-stretch-qcom-snapdragon-arm64-${INSTALLER_BUILD_VERSION}.img.gz
+         https://github.com/RSB4760/apq8016_sd_installer/raw/LA.BR.1.2.7-01010-8x16_advan/boot-installer-rsb-4760-stretch-qcom-snapdragon-arm64-${INSTALLER_BUILD_VERSION}.img.gz
+
     wget --progress=dot -e dotbytes=2M \
          http://advgitlab.eastasia.cloudapp.azure.com/db410c/sd-installer/raw/${INSTALLER_LINARO_RELEASE}/linaro-stretch-installer-qcom-snapdragon-arm64-${INSTALLER_BUILD_VERSION}.img.gz
 
-    cp boot-installer-linaro-stretch-qcom-snapdragon-arm64-${INSTALLER_BUILD_VERSION}.img.gz out/boot.img.gz
+    cp boot-installer-rsb-4760-stretch-qcom-snapdragon-arm64-${INSTALLER_BUILD_VERSION}.img.gz out/boot.img.gz
     cp linaro-stretch-installer-qcom-snapdragon-arm64-${INSTALLER_BUILD_VERSION}.img.gz out/rootfs.img.gz
     gunzip out/{boot,rootfs}.img.gz
 }
